@@ -86,6 +86,9 @@ def adjust_difficulty_dda(current_params, player_results, P_Strong, P_Weak):
     kill = player_results.get('kill_count', 0)
     death = player_results.get('death_count', 1)
 
+    if death == 0:
+        death = 1
+
     performance_ratio = kill / death
     new_params = current_params.copy()
     action = "No Change"  # 預設 action 為 No Change
