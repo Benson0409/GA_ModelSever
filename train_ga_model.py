@@ -9,13 +9,13 @@ from model_core import (
 
 # --- 基因範圍設定 ---
 # 血量
-HP_BOUNDS = [0.5, 3.0]
+HP_BOUNDS = [0.5, 2.0]
 # 攻擊力
-ATK_BOUNDS = [0.5, 3.0]
+ATK_BOUNDS = [0.5, 1.5]
 # 搜尋範圍
-DET_BOUNDS = [0.5, 2.5]
+DET_BOUNDS = [0.5, 1.5]
 # 移動速度
-SPEED_BOUNDS = [0.5, 2.0]
+SPEED_BOUNDS = [0.5, 1.5]
 
 # 設定 GA 參數
 POP_SIZE = 30
@@ -56,32 +56,32 @@ def checkBounds(min_val, max_val):
 
                 # --- 引用最新的全局 BOUNDS 變數進行裁剪 ---
 
-                # 裁剪 P1: HP_Mult [0.5, 3.0]
+                # 裁剪 P1: HP_Mult [0.5, 2.0]
                 individual[0] = np.clip(individual[0], HP_BOUNDS[0], HP_BOUNDS[1])
 
-                # 裁剪 P2: ATK_Mult [0.5, 3.0]
+                # 裁剪 P2: ATK_Mult [0.5, 1.5]
                 individual[1] = np.clip(individual[1], ATK_BOUNDS[0], ATK_BOUNDS[1])
 
-                # 裁剪 P3: Det_Range [0.5, 2.5]
+                # 裁剪 P3: Det_Range [0.5, 1.5]
                 individual[2] = np.clip(individual[2], DET_BOUNDS[0], DET_BOUNDS[1])
 
-                # 裁剪 P4: Move_Speed [0.5, 2.0]
+                # 裁剪 P4: Move_Speed [0.5, 1.5]
                 individual[3] = np.clip(individual[3], SPEED_BOUNDS[0], SPEED_BOUNDS[1])
 
             return offspring
         return wrapper
     return decorator
 
-# 訓練強殭屍：玩家表現差（高難度）
+# 強殭屍：應該讓玩家表現差（適應度越高）→ 取負號
 def evaluate_strong(individual):
-    sim_result = simulate_game_run(*individual)
-    return evaluate_from_unity(individual, sim_result),
-
-# 訓練弱殭屍：玩家表現好（低難度）
-def evaluate_weak(individual):
     sim_result = simulate_game_run(*individual)
     score = evaluate_from_unity(individual, sim_result)
     return (-score,)
+
+# 弱殭屍：應該讓玩家表現好（適應度越高）→ 保持原樣
+def evaluate_weak(individual):
+    sim_result = simulate_game_run(*individual)
+    return evaluate_from_unity(individual, sim_result),
 
 # A. 交配 (Mate)
 toolbox.register("mate", tools.cxBlend, alpha=0.5)

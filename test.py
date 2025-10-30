@@ -2,10 +2,10 @@ import requests
 
 # Unity 模擬傳送的玩家數據
 player_data = {
-    "kill_count": 3,
-    "death_count": 2,
-    "damage_taken": 50.0,
-    "damage_dealt": 800.0,
+    "kill_count": 30,
+    "death_count": 20,
+    "damage_taken": 500.0,
+    "damage_dealt": 80.0,
     "game_time": 280
 }
 
