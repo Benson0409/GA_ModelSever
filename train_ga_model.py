@@ -9,13 +9,13 @@ from model_core import (
 
 # --- 基因範圍設定 ---
 # 血量
-HP_BOUNDS = [0.5, 2.0]
+HP_BOUNDS = [1.0, 1.25]
 # 攻擊力
 ATK_BOUNDS = [0.5, 1.5]
 # 搜尋範圍
-DET_BOUNDS = [0.5, 1.5]
+DET_BOUNDS = [0.75, 1.5]
 # 移動速度
-SPEED_BOUNDS = [0.5, 1.5]
+SPEED_BOUNDS = [0.75, 1.5]
 
 # 設定 GA 參數
 POP_SIZE = 30

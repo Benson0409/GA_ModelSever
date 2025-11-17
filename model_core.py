@@ -6,11 +6,13 @@ from deap import base, creator, tools
 
 # --- 評估函式 ---
 def simulate_game_run(hp_mult, atk_mult, det_range, move_speed_mult):
-    base_kill = 10
+
+    # 基礎遊玩數據
+    base_kill = 25
     base_death = 3
-    base_dealt = 1000
-    base_taken = 70
-    base_time = 300
+    base_dealt = 2700
+    base_taken = 200
+    base_time = 450
 
     # 擊殺數（越高代表太強，數值應降低）
     kill_count = base_kill / (
@@ -28,7 +30,7 @@ def simulate_game_run(hp_mult, atk_mult, det_range, move_speed_mult):
 
     # 傷害輸出（若高但擊殺少 → 沒有效率）
     damage_dealt = base_dealt / (
-        (0.8 * hp_mult) +
+        (0.7 * hp_mult) +
         (0.2 * atk_mult)
     )
 
@@ -40,7 +42,7 @@ def simulate_game_run(hp_mult, atk_mult, det_range, move_speed_mult):
 
     # 遊戲時間（比重降低，只代表熟練程度或風格）
     game_time = base_time * (
-        (0.3 * hp_mult) + (0.1 * atk_mult)
+        (0.5 * hp_mult) + (0.3 * atk_mult)
     )
 
     return {
@@ -93,13 +95,13 @@ def evaluate_from_unity(individual, player_data):
     return fitness_value
 
 # --- DDA 調整邏輯 ---
-ADJUSTMENT_RATE = 0.2 #調整幅度
-STRONG_THRESHOLD = 5.0
-WEAK_THRESHOLD = 2.0
+
+# 調整幅度
 
 ADJUSTMENT_RATE = 0.2
-STRONG_THRESHOLD = 8.0   # 擊殺 / 死亡 比高於 8 → 強
-WEAK_THRESHOLD = 2.0     # 擊殺 / 死亡 比低於 2 → 弱
+STRONG_THRESHOLD = 7.0
+WEAK_THRESHOLD = 3.0
+
 
 def adjust_difficulty_dda(current_params, player_results, P_Strong, P_Weak):
     kill = player_results.get('kill_count', 0)
