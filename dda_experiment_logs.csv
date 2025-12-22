@@ -1,0 +1,75 @@
+時間,玩家ID,模式,場景,狀態,K/D值,評估分數,血量倍率,攻擊倍率,偵測範圍,移動速度,動作
+00:02:30,User_4294,1,Tutorial,Alive,0.00,-2.00,1.00,1.00,1.00,1.00,Tutorial Monitoring
+00:02:37,User_4294,1,Tutorial,Alive,0.00,-2.05,1.00,1.00,1.00,1.00,Tutorial Monitoring
+00:02:44,User_4294,1,Tutorial,Alive,0.00,-2.10,1.00,1.00,1.00,1.00,Tutorial Monitoring
+00:02:49,User_4294,1,Tutorial,Alive,0.00,-2.15,1.00,1.00,1.00,1.00,Tutorial Monitoring
+00:02:56,User_4294,1,Tutorial,Alive,0.00,-2.20,1.00,1.00,1.00,1.00,Tutorial Monitoring
+00:03:06,User_4294,1,Tutorial,Alive,0.00,-2.21,1.00,1.00,1.00,1.00,Tutorial Monitoring
+00:03:11,User_4294,1,Tutorial,Alive,2.00,8.22,1.00,1.00,1.00,1.00,Tutorial Monitoring
+00:03:16,User_4294,1,Tutorial,Alive,4.00,18.70,1.00,1.00,1.00,1.00,Tutorial Monitoring
+00:03:21,User_4294,1,Tutorial,Alive,6.00,29.21,1.00,1.00,1.00,1.00,Tutorial Monitoring
+00:03:28,User_4294,1,Tutorial,Alive,6.00,29.16,1.00,1.00,1.00,1.00,Tutorial Monitoring
+00:03:31,User_4294,1,MainGame,Alive,0.00,-2.00,1.00,1.00,1.00,1.00,Early Game Buffer
+00:03:36,User_4294,1,MainGame,Alive,0.00,-2.05,0.95,0.95,0.97,0.97,Adjusted Down
+00:03:41,User_4294,1,MainGame,Alive,2.00,-6.82,0.95,0.95,0.97,0.97,Stay Balanced
+00:03:46,User_4294,1,MainGame,Alive,2.00,-6.62,0.95,0.95,0.97,0.97,Stay Balanced
+00:03:51,User_4294,1,MainGame,Alive,4.00,3.54,0.95,0.95,0.97,0.97,Stay Balanced
+00:03:56,User_4294,1,MainGame,Alive,4.00,3.70,0.95,0.95,0.97,0.97,Stay Balanced
+00:04:01,User_4294,1,MainGame,Alive,6.00,1.15,0.95,0.95,0.97,0.97,Stay Balanced
+00:04:06,User_4294,1,MainGame,Alive,8.00,-0.65,0.95,0.95,0.97,0.97,Stay Balanced
+00:04:11,User_4294,1,MainGame,Alive,8.00,-0.70,0.95,0.95,0.97,0.97,Stay Balanced
+00:04:16,User_4294,1,MainGame,Alive,8.00,-0.75,0.95,0.95,0.97,0.97,Stay Balanced
+00:04:21,User_4294,1,MainGame,Alive,12.00,19.90,1.02,1.02,1.00,1.00,Adjusted Up
+00:04:26,User_4294,1,MainGame,Alive,12.00,19.75,1.08,1.08,1.03,1.03,Adjusted Up
+00:04:31,User_4294,1,MainGame,Alive,12.00,19.68,1.13,1.13,1.06,1.06,Adjusted Up
+00:04:36,User_4294,1,MainGame,Alive,14.00,29.91,1.17,1.17,1.08,1.08,Adjusted Up
+00:04:41,User_4294,1,MainGame,Alive,16.00,40.28,1.20,1.20,1.10,1.10,Adjusted Up
+00:04:46,User_4294,1,MainGame,Alive,16.00,40.67,1.23,1.23,1.11,1.11,Adjusted Up
+00:04:51,User_4294,1,MainGame,Alive,16.00,29.89,1.26,1.26,1.13,1.13,Adjusted Up
+00:04:56,User_4294,1,MainGame,Alive,20.00,50.04,1.28,1.28,1.14,1.14,Adjusted Up
+00:05:01,User_4294,1,MainGame,Alive,20.00,50.87,1.30,1.30,1.15,1.15,Adjusted Up
+00:05:06,User_4294,1,MainGame,Alive,20.00,51.30,1.31,1.31,1.15,1.15,Adjusted Up
+00:05:11,User_4294,1,MainGame,Alive,22.00,61.62,1.33,1.33,1.16,1.16,Adjusted Up
+00:05:15,User_4294,1,MainGame,Dead,11.00,-35.68,1.34,1.34,1.17,1.17,Emergency Down (Death)
+00:05:30,User_9823,1,Tutorial,Alive,0.00,-2.00,1.00,1.00,1.00,1.00,Tutorial Monitoring
+00:10:43,User_5502,1,Tutorial,Alive,0.00,-2.00,1.00,1.00,1.00,1.00,Tutorial Monitoring
+00:10:49,User_5502,1,Tutorial,Alive,0.00,-2.05,1.00,1.00,1.00,1.00,Tutorial Monitoring
+00:10:56,User_5502,1,Tutorial,Alive,0.00,-2.10,1.00,1.00,1.00,1.00,Tutorial Monitoring
+00:11:03,User_5502,1,Tutorial,Alive,0.00,-2.15,1.00,1.00,1.00,1.00,Tutorial Monitoring
+00:11:08,User_5502,1,Tutorial,Alive,0.00,-2.20,1.00,1.00,1.00,1.00,Tutorial Monitoring
+00:11:13,User_5502,1,Tutorial,Alive,0.00,-2.25,1.00,1.00,1.00,1.00,Tutorial Monitoring
+00:11:18,User_5502,1,Tutorial,Alive,0.00,-2.30,1.00,1.00,1.00,1.00,Tutorial Monitoring
+00:11:22,User_5502,1,MainGame,Alive,0.00,-2.00,1.00,1.00,1.00,1.00,Early Game Buffer
+00:11:27,User_5502,1,MainGame,Alive,0.00,-2.05,0.95,0.95,0.97,0.97,Adjusted Down
+00:11:32,User_5502,1,MainGame,Alive,0.00,-1.92,0.92,0.92,0.94,0.94,Adjusted Down
+00:11:37,User_5502,1,MainGame,Alive,2.00,8.44,0.92,0.92,0.94,0.94,Stay Balanced
+00:11:42,User_5502,1,MainGame,Alive,2.00,8.67,0.92,0.92,0.94,0.94,Stay Balanced
+00:11:47,User_5502,1,MainGame,Alive,4.00,18.76,0.92,0.92,0.94,0.94,Stay Balanced
+00:11:52,User_5502,1,MainGame,Alive,4.00,18.75,0.92,0.92,0.94,0.94,Stay Balanced
+00:11:57,User_5502,1,MainGame,Alive,6.00,28.98,0.92,0.92,0.94,0.94,Stay Balanced
+00:12:02,User_5502,1,MainGame,Alive,6.00,28.93,0.92,0.92,0.94,0.94,Stay Balanced
+00:12:07,User_5502,1,MainGame,Alive,8.00,39.16,0.92,0.92,0.94,0.94,Stay Balanced
+00:12:12,User_5502,1,MainGame,Alive,10.00,49.35,0.99,0.99,0.98,0.98,Adjusted Up
+00:12:17,User_5502,1,MainGame,Alive,12.00,59.58,1.05,1.05,1.02,1.02,Adjusted Up
+00:12:22,User_5502,1,MainGame,Alive,16.00,79.82,1.10,1.10,1.04,1.04,Adjusted Up
+00:12:27,User_5502,1,MainGame,Alive,18.00,90.32,1.15,1.15,1.07,1.07,Adjusted Up
+00:12:32,User_5502,1,MainGame,Alive,20.00,100.59,1.19,1.19,1.09,1.09,Adjusted Up
+00:12:37,User_5502,1,MainGame,Alive,26.00,130.83,1.22,1.22,1.10,1.10,Adjusted Up
+00:12:42,User_5502,1,MainGame,Alive,28.00,140.90,1.25,1.25,1.12,1.12,Adjusted Up
+00:12:47,User_5502,1,MainGame,Alive,30.00,151.48,1.27,1.27,1.13,1.13,Adjusted Up
+00:12:52,User_5502,1,MainGame,Alive,32.00,162.02,1.29,1.29,1.14,1.14,Adjusted Up
+00:12:57,User_5502,1,MainGame,Alive,32.00,162.64,1.30,1.30,1.15,1.15,Adjusted Up
+00:13:02,User_5502,1,MainGame,Alive,34.00,173.09,1.32,1.32,1.16,1.16,Adjusted Up
+00:13:07,User_5502,1,MainGame,Alive,34.00,173.44,1.33,1.33,1.16,1.16,Adjusted Up
+00:13:12,User_5502,1,MainGame,Alive,34.00,174.21,1.34,1.34,1.17,1.17,Adjusted Up
+00:13:17,User_5502,1,MainGame,Alive,34.00,174.48,1.35,1.35,1.17,1.17,Adjusted Up
+00:13:22,User_5502,1,MainGame,Alive,36.00,184.62,1.36,1.36,1.18,1.18,Adjusted Up
+00:13:27,User_5502,1,MainGame,Alive,36.00,185.55,1.36,1.36,1.18,1.18,Adjusted Up
+00:13:32,User_5502,1,MainGame,Alive,42.00,205.18,1.37,1.37,1.18,1.18,Adjusted Up
+00:13:37,User_5502,1,MainGame,Alive,46.00,225.52,1.37,1.37,1.19,1.19,Adjusted Up
+00:13:42,User_5502,1,MainGame,Alive,46.00,226.17,1.38,1.38,1.19,1.19,Adjusted Up
+00:13:47,User_5502,1,MainGame,Alive,46.00,227.11,1.38,1.38,1.19,1.19,Adjusted Up
+00:13:52,User_5502,1,MainGame,Alive,46.00,227.56,1.38,1.38,1.19,1.19,Adjusted Up
+00:13:57,User_5502,1,MainGame,Alive,46.00,228.40,1.39,1.39,1.19,1.19,Adjusted Up
+00:14:00,User_5502,1,MainGame,Dead,23.00,-1343.81,1.39,1.39,1.19,1.19,Emergency Down (Death)
+00:14:00,User_5502,1,MainGame,Dead,11.50,-2916.03,1.39,1.39,1.20,1.20,Emergency Down (Death)
