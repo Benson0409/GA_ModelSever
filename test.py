@@ -1,96 +1,82 @@
 import requests
 import time
-import math
 import random
 
 # API 位置
-URL = "http://127.0.0.1:5050/adjust_difficulty"
-
-# 同步基準線 (與 Unity / API 保持一致)
-BASE = {"HP": 100.0, "ATK": 10.0, "DET": 20.0, "SPD": 2.5}
+URL_DDA = "http://127.0.0.1:5050/adjust_difficulty"
+URL_FINAL = "http://127.0.0.1:5050/submit_final_result"
 
 
-def send_sim(p_id, mode, scene, status, kills, deaths, dmg_in, dmg_out, step):
+def send_step(p_id, kills, deaths, status, step):
     payload = {
         "player_id": p_id,
-        "mode": mode,
-        "scene_name": scene,
+        "mode": "1",  # 測試 5秒組
+        "scene_name": "MainGame",
         "status": status,
         "kill_count": kills,
         "death_count": deaths,
-        "damage_taken": dmg_in,
-        "damage_dealt": dmg_out,
         "game_time": step * 5
     }
     try:
-        response = requests.post(URL, json=payload, timeout=5)
-        if response.status_code == 200:
-            res = response.json()
-            p = res['adjusted_params']
-
-            # 計算當前傳送的 K/D (避免除以 0)
-            kd = kills / (deaths if deaths > 0 else 0.5)
-
-            print(f"[{p_id}] Step:{step:2} | K/D:{kd:4.1f} | 狀態:{status:5s} | 動作: {res['adjustment_action']:18s}")
-            print(
-                f"    -> 實值回饋: HP:{p['HP_Mult'] * BASE['HP']:5.1f}, ATK:{p['ATK_Mult'] * BASE['ATK']:4.1f}, DET:{p['Det_Range'] * BASE['DET']:4.1f}, SPD:{p['Move_Speed'] * BASE['SPD']:4.2f}")
-        else:
-            print(f"❌ 伺服器錯誤: {response.status_code}")
+        res = requests.post(URL_DDA, json=payload, timeout=5).json()
+        p = res['adjusted_params']
+        print(
+            f"[{p_id}] 步數:{step:2} | K/D:{(kills / (deaths if deaths > 0 else 0.5)):4.1f} | 狀態:{status:5s} | 動作:{res['adjustment_action']}")
+        print(f"    -> 當前倍率: HP:{p['HP_Mult']:.2f}, SPD:{p['Move_Speed']:.2f}")
     except Exception as e:
-        print(f"❌ 連連失敗: {e}")
+        print(f"❌ 傳送失敗: {e}")
 
 
-def run_realistic_test():
-    print("=" * 110)
-    print("🚀 啟動強化版 DDA 邏輯驗證測試 (模擬路徑：強勢 -> 崩潰 -> 復甦)")
-    print("   目標：觀察 K/D 劇烈波動下，模型是否能精準執行 [Adjusted Up] 與 [Emergency Down]")
-    print("=" * 110)
+def run_simulation():
+    p_id = "Sim_Varied_User_" + str(random.randint(10, 99))
+    print(f"==================================================")
+    print(f"🚀 開始模擬受試者變化的遊玩過程: {p_id}")
+    print(f"==================================================")
 
-    # 模擬受試者：一名表現有明顯波動的玩家
-    # 這裡我們模擬兩個受試者，一個接一個出現，以測試 Dashboard 的自動追蹤功能
-    subjects = ["Adaptive_Subject_01", "Adaptive_Subject_02"]
+    # 階段 1：強勢期 (Step 1-10) -> 難度應該上升
+    print("\n--- 階段 1: 玩家表現強勢 (預期：難度上升) ---")
+    for i in range(1, 11):
+        send_step(p_id, kills=12, deaths=0, status="Alive", step=i)
+        time.sleep(0.5)
 
-    for p_id in subjects:
-        print(f"\n🌟 --- 開始測試受試者：{p_id} --- 🌟")
+    # 階段 2：平衡期 (Step 11-15) -> K/D 介於 0.3 ~ 0.7，難度應該持平
+    print("\n--- 階段 2: 表現平衡 (預期：Stay Balanced) ---")
+    for i in range(11, 16):
+        # K/D = 1 / 2 = 0.5 (落在 0.3~0.7 區間)
+        send_step(p_id, kills=1, deaths=2, status="Alive", step=i)
+        time.sleep(0.5)
 
-        # 每個玩家模擬 40 個步驟 (約 3.3 分鐘數據)
-        for step in range(1, 41):
-            status = "Alive"
+    # 階段 3：弱勢期 (Step 16-20) -> 難度應該下降
+    print("\n--- 階段 3: 表現下滑 (預期：難度下降) ---")
+    for i in range(16, 21):
+        # K/D = 0 / 2 = 0
+        send_step(p_id, kills=0, deaths=2, status="Alive", step=i)
+        time.sleep(0.5)
 
-            # --- 模擬玩家表現階段：波浪起伏 ---
-            if step <= 10:
-                # 第一階段：強勢 (K/D > 0.7)
-                kills = 8 + random.randint(-2, 2)
-                deaths = 0
-                stage = "強勢期"
+    # 階段 4：死亡突發 (Step 21) -> 難度應該大幅急降
+    print("\n--- 階段 4: 玩家死亡 (預期：Emergency Down) ---")
+    send_step(p_id, kills=0, deaths=1, status="Dead", step=21)
 
-            elif 11 <= step <= 25:
-                # 第二階段：表現大幅下滑 (K/D 跌破 0.3)
-                kills = 0 if step % 3 != 0 else 1
-                deaths = 1 if step % 5 == 0 else 0
-                stage = "下滑期"
+    print("\n--- 階段 5: 死亡後的冷靜期 (預期：Restricted Recovery) ---")
+    for i in range(22, 26):
+        # 即使表現變好，回升速度也應該被限制
+        send_step(p_id, kills=10, deaths=0, status="Alive", step=i)
+        time.sleep(0.5)
 
-                # 模擬玩家在第 20 步不幸死亡
-                if step == 20:
-                    status = "Dead"
-                    stage = "玩家死亡"
-
-            else:
-                # 第三階段：重新復甦 (K/D 再次升高)
-                kills = 4 + (step - 25) // 2
-                deaths = 0
-                stage = "復甦期"
-
-            send_sim(p_id, "1", "MainGame", status, kills, deaths, step * 2, kills * 30, step)
-
-            # 加速模擬執行 (0.1s 代表 5s)
-            time.sleep(0.1)
-
-    print("\n" + "=" * 110)
-    print("✅ 模擬實驗完成！")
-    print("請開啟儀表板 (http://127.0.0.1:5050) 查看自動追蹤與 CSV 紀錄。")
-    print("=" * 110)
+    # 最後傳送通關數據
+    final_payload = {
+        "player_id": p_id,
+        "mode": "1",
+        "totalDamage": 5000,
+        "damageTaken": 800,
+        "kills": 150,
+        "deaths": 5,
+        "completionTime": 130.0,
+        "result": "Completed"
+    }
+    requests.post(URL_FINAL, json=final_payload)
+    print(f"\n✅ 模擬結束，請檢查 Dashboard 上的曲線變化。")
 
 
 if __name__ == "__main__":
-    run_realistic_test()
+    run_simulation()

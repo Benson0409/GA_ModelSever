@@ -8,7 +8,7 @@ import os
 
 app = Flask(__name__)
 
-# --- 1. 殭屍基礎數值定義 ---
+# --- 1. 殭屍基礎數值定義 (與 Unity 初始設定同步) ---
 BASE_STATS = {
     "HP": 100.0,
     "ATK": 10.0,
@@ -16,7 +16,7 @@ BASE_STATS = {
     "SPD": 2.5
 }
 
-# --- 2. 載入模型參數 (更新邊界) ---
+# --- 2. 載入模型參數 ---
 try:
     with open("P_Strong.pkl", "rb") as f:
         P_Strong = pickle.load(f)
@@ -24,181 +24,198 @@ try:
         P_Weak = pickle.load(f)
     print("✅ 成功載入模型參數。")
 except FileNotFoundError:
+    print("⚠️ 找不到模型檔案，使用預設安全邊界。")
     P_Strong = {"HP_Mult": 1.4, "ATK_Mult": 1.2, "Det_Range": 1.1, "Move_Speed": 1.2}
     P_Weak = {"HP_Mult": 0.8, "ATK_Mult": 0.8, "Det_Range": 0.9, "Move_Speed": 0.9}
 
-# --- 3. 全域狀態管理 ---
+# --- 3. 全域狀態管理與 CSV 標題初始化 ---
 PLAYER_SESSIONS = {}
 LOG_FILE = "dda_experiment_logs.csv"
+FINAL_RESULT_FILE = "final_experiment_results.csv"
 
 
-def init_csv_header():
-    header = [
-        "時間", "玩家ID", "模式", "場景", "狀態", "K/D值",
-        "HP倍率", "ATK倍率", "DET倍率", "SPD倍率",
-        "HP實值", "ATK實值", "DET實值", "SPD實值", "動作"
-    ]
+def init_csv_files():
+    log_header = ["時間", "玩家ID", "模式", "場景", "狀態", "K/D值", "HP倍率", "ATK倍率", "DET倍率", "SPD倍率",
+                  "HP實值", "ATK實值", "DET實值", "SPD實值", "動作"]
     if not os.path.exists(LOG_FILE) or os.path.getsize(LOG_FILE) == 0:
         with open(LOG_FILE, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.writer(f)
-            writer.writerow(header)
+            csv.writer(f).writerow(log_header)
+
+    final_header = ["紀錄時間", "玩家ID", "模式", "總造成傷害", "總受到傷害", "擊殺數", "死亡數", "通關時間",
+                    "結果狀態"]
+    if not os.path.exists(FINAL_RESULT_FILE) or os.path.getsize(FINAL_RESULT_FILE) == 0:
+        with open(FINAL_RESULT_FILE, 'w', newline='', encoding='utf-8') as f:
+            csv.writer(f).writerow(final_header)
 
 
-init_csv_header()
+init_csv_files()
 
-# --- 4. 監控面板 HTML ---
+# --- 4. 監控面板 HTML 模板 (恢復完整欄位版) ---
 DASHBOARD_HTML = """
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <title>DDA 監控中心 v3.6 (修正秒回升)</title>
+    <meta charset="UTF-8"><title>DDA 實驗監控中心 v4.8</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .chart-container { position: relative; height: 380px; width: 100%; }
+        .chart-container { position: relative; height: 350px; width: 100%; }
         select { background-color: #1f2937; color: white; border: 1px solid #4b5563; padding: 0.5rem; border-radius: 0.5rem; }
+        .stat-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(8px); border: 1px solid #334155; }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100 p-6 font-sans">
     <div class="max-w-7xl mx-auto">
         <header class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
             <div>
-                <h1 class="text-3xl font-bold text-cyan-400">DDA 實驗數據中心</h1>
-                <p class="text-slate-400 text-sm mt-1">邏輯優化：死亡大幅降難 + 防止瞬間回溫</p>
+                <h1 class="text-3xl font-bold text-cyan-400">DDA 數據監控中心</h1>
+                <p class="text-slate-400 text-sm mt-1">完整功能恢復：包含實時指標、最終總結與自動追蹤</p>
             </div>
-            <select id="playerSelect" onchange="changePlayer()">
-                <option value="latest">--- 自動追蹤最新 ---</option>
+            <select id="playerSelect" onchange="changePlayer()" class="bg-slate-800">
+                <option value="latest">--- 自動追蹤最新受試者 ---</option>
             </select>
         </header>
 
+        <!-- 1. 頂部狀態指標 (恢復欄位) -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 text-center">
-                <p class="text-slate-500 text-[10px] uppercase font-bold">當前玩家</p>
+            <div class="stat-card p-4 rounded-xl text-center">
+                <p class="text-slate-500 text-[10px] uppercase font-bold">當前玩家 ID</p>
                 <h2 id="current-player" class="text-lg text-cyan-400 font-bold mt-1 truncate">N/A</h2>
             </div>
-            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 text-center">
-                <p class="text-slate-500 text-[10px] uppercase font-bold">K/D 比例</p>
+            <div class="stat-card p-4 rounded-xl text-center">
+                <p class="text-slate-500 text-[10px] uppercase font-bold">當前 K/D 比值</p>
                 <h2 id="kd-display" class="text-lg text-white font-bold mt-1">0.00</h2>
             </div>
-            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 text-center">
-                <p class="text-slate-500 text-[10px] uppercase font-bold">冷靜期步數</p>
+            <div class="stat-card p-4 rounded-xl text-center">
+                <p class="text-slate-500 text-[10px] uppercase font-bold">冷靜期 (恢復中)</p>
                 <h2 id="recovery-steps" class="text-lg text-amber-400 font-bold mt-1">0</h2>
             </div>
-            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 text-center">
-                <p class="text-slate-500 text-[10px] uppercase font-bold">目前狀態</p>
+            <div class="stat-card p-4 rounded-xl text-center">
+                <p class="text-slate-500 text-[10px] uppercase font-bold">受試者狀態</p>
                 <h2 id="player-status" class="text-xs text-emerald-400 font-bold mt-2">-</h2>
             </div>
         </div>
 
-        <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700 shadow-xl mb-6">
+        <!-- 2. 🏆 最終結果總結 -->
+        <div id="finalResultCard" class="hidden mb-6 bg-indigo-900/40 border border-indigo-500/50 rounded-2xl p-6 shadow-2xl">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-sm font-bold text-indigo-400 border-b border-slate-700 pb-2">殭屍能力實值詳情</h3>
+                <h2 class="text-xl font-bold text-indigo-300">🏆 本局實驗最終結果總結</h2>
+                <span id="res-status-tag" class="px-3 py-1 bg-green-900/50 text-green-400 text-xs rounded-full border border-green-500">Completed</span>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
+                <div class="bg-slate-800/50 p-3 rounded-lg"> <p class="text-[10px] text-slate-500 uppercase">總擊殺</p> <p id="res-kills" class="text-xl font-bold">--</p> </div>
+                <div class="bg-slate-800/50 p-3 rounded-lg"> <p class="text-[10px] text-slate-500 uppercase">總死亡</p> <p id="res-deaths" class="text-xl font-bold">--</p> </div>
+                <div class="bg-slate-800/50 p-3 rounded-lg"> <p class="text-[10px] text-slate-500 uppercase">輸出傷害</p> <p id="res-dmg-out" class="text-xl font-bold">--</p> </div>
+                <div class="bg-slate-800/50 p-3 rounded-lg"> <p class="text-[10px] text-slate-500 uppercase">受傷數值</p> <p id="res-dmg-in" class="text-xl font-bold">--</p> </div>
+                <div class="bg-slate-800/50 p-3 rounded-lg border border-cyan-500/30"> <p class="text-[10px] text-cyan-500 uppercase">通關耗時</p> <p id="res-time" class="text-xl font-bold text-cyan-400">--</p> </div>
+            </div>
+        </div>
+
+        <!-- 3. 殭屍屬性詳情 (恢復倍率與實值) -->
+        <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700 shadow-xl mb-6">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-2">
+                <h3 class="text-sm font-bold text-indigo-400">殭屍能力詳情 (基礎換算實值)</h3>
                 <h2 id="last-action" class="text-xs text-amber-400 font-bold">-</h2>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700 text-center">
-                    <p class="text-[10px] text-slate-500">血量 (HP)</p>
+                <div class="bg-slate-900/50 p-3 rounded-lg text-center"> 
+                    <p class="text-[10px] text-slate-500">血量 (HP)</p> 
                     <h4 id="real-hp" class="text-xl font-mono text-red-400">--</h4>
+                    <p id="mult-hp" class="text-[9px] text-slate-600">倍率: --</p>
                 </div>
-                <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700 text-center">
-                    <p class="text-[10px] text-slate-500">攻擊 (ATK)</p>
+                <div class="bg-slate-900/50 p-3 rounded-lg text-center"> 
+                    <p class="text-[10px] text-slate-500">攻擊 (ATK)</p> 
                     <h4 id="real-atk" class="text-xl font-mono text-amber-400">--</h4>
+                    <p id="mult-atk" class="text-[9px] text-slate-600">倍率: --</p>
                 </div>
-                <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700 text-center">
-                    <p class="text-[10px] text-slate-500">偵測 (DET)</p>
+                <div class="bg-slate-900/50 p-3 rounded-lg text-center"> 
+                    <p class="text-[10px] text-slate-500">偵測 (DET)</p> 
                     <h4 id="real-det" class="text-xl font-mono text-purple-400">--</h4>
+                    <p id="mult-det" class="text-[9px] text-slate-600">倍率: --</p>
                 </div>
-                <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700 text-center">
-                    <p class="text-[10px] text-slate-500">速度 (SPD)</p>
+                <div class="bg-slate-900/50 p-3 rounded-lg text-center"> 
+                    <p class="text-[10px] text-slate-500">速度 (SPD)</p> 
                     <h4 id="real-spd" class="text-xl font-mono text-emerald-400">--</h4>
+                    <p id="mult-spd" class="text-[9px] text-slate-600">倍率: --</p>
                 </div>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-2xl">
-                <h3 class="text-sm font-bold text-slate-300 mb-4">玩家性能趨勢 (K/D)</h3>
-                <div class="chart-container"><canvas id="kdChart"></canvas></div>
-            </div>
-            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-2xl">
-                <h3 class="text-sm font-bold text-slate-300 mb-4">殭屍屬性演化 (四項指標)</h3>
-                <div class="chart-container"><canvas id="paramChart"></canvas></div>
-            </div>
+            <div class="bg-slate-800 p-6 rounded-2xl h-[400px] shadow-xl"><canvas id="kdChart"></canvas></div>
+            <div class="bg-slate-800 p-6 rounded-2xl h-[400px] shadow-xl"><canvas id="paramChart"></canvas></div>
         </div>
     </div>
 
     <script>
         let selectedPlayer = 'latest';
-        let currentHistory = [];
         const BASE = {{ BASE_STATS | tojson }};
-
-        const kdCtx = document.getElementById('kdChart').getContext('2d');
-        const paramCtx = document.getElementById('paramChart').getContext('2d');
-
-        const kdChart = new Chart(kdCtx, {
-            type: 'line',
-            data: { labels: [], datasets: [{ label: 'K/D', borderColor: '#22d3ee', data: [], tension: 0.4, fill: true, pointRadius: 2 }] },
-            options: { responsive: true, maintainAspectRatio: false }
-        });
-
-        const paramChart = new Chart(paramCtx, {
-            type: 'line',
-            data: { 
-                labels: [], 
-                datasets: [
-                    { label: 'HP', borderColor: '#f87171', data: [], tension: 0.2, borderWidth: 3 },
-                    { label: 'ATK', borderColor: '#fbbf24', data: [], tension: 0.2, borderWidth: 2, borderDash: [5, 5] },
-                    { label: 'DET', borderColor: '#a78bfa', data: [], tension: 0.2, borderWidth: 2 },
-                    { label: 'SPD', borderColor: '#34d399', data: [], tension: 0.2, borderWidth: 3, borderDash: [2, 2] }
-                ] 
-            },
-            options: { 
-                responsive: true, maintainAspectRatio: false, 
-                scales: { y: { min: 0.6, max: 1.6 } }
-            }
-        });
+        const kdChart = new Chart(document.getElementById('kdChart').getContext('2d'), { type: 'line', data: { labels: [], datasets: [{ label: 'K/D Ratio', borderColor: '#22d3ee', data: [], tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false }});
+        const paramChart = new Chart(document.getElementById('paramChart').getContext('2d'), { type: 'line', data: { labels: [], datasets: [
+            { label: 'HP', borderColor: '#f87171', data: [], borderWidth: 3 },
+            { label: 'ATK', borderColor: '#fbbf24', data: [], borderWidth: 2, borderDash: [5, 5] },
+            { label: 'DET', borderColor: '#a78bfa', data: [], borderWidth: 2 },
+            { label: 'SPD', borderColor: '#34d399', data: [], borderWidth: 3, borderDash: [2, 2] }
+        ]}, options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0.6, max: 1.6 }}}});
 
         async function updateDashboard() {
             try {
                 const res = await fetch('/get_history');
                 const allData = await res.json();
                 const players = Object.keys(allData);
+
+                const sortedPlayers = players.sort((a, b) => allData[a].last_updated - allData[b].last_updated);
+
                 const select = document.getElementById('playerSelect');
-                if(players.length !== (select.options.length - 1)) {
+                if(sortedPlayers.length !== (select.options.length - 1)) {
                     select.innerHTML = '<option value="latest">--- 自動追蹤最新 ---</option>';
-                    players.forEach(p => { select.innerHTML += `<option value="${p}">${p}</option>`; });
+                    sortedPlayers.forEach(p => { select.innerHTML += `<option value="${p}">${p}</option>`; });
                     select.value = selectedPlayer;
                 }
 
-                if(players.length > 0) {
-                    const targetID = (selectedPlayer === 'latest') ? players[players.length - 1] : selectedPlayer;
-                    document.getElementById('current-player').innerText = targetID;
+                if(sortedPlayers.length > 0) {
+                    const targetID = (selectedPlayer === 'latest') ? sortedPlayers[sortedPlayers.length - 1] : selectedPlayer;
                     const session = allData[targetID];
-                    currentHistory = session.history;
+                    document.getElementById('current-player').innerText = targetID;
 
-                    if(currentHistory.length > 0) {
-                        const last = currentHistory[currentHistory.length - 1];
-                        document.getElementById('last-action').innerText = last.action;
-                        document.getElementById('player-status').innerText = last.status;
+                    // A. 更新指標卡片
+                    document.getElementById('recovery-steps').innerText = session.recovery_counter || 0;
+
+                    // B. 更新總結卡片
+                    if(session.final_result) {
+                        document.getElementById('finalResultCard').classList.remove('hidden');
+                        const f = session.final_result;
+                        document.getElementById('res-kills').innerText = f.kills || 0;
+                        document.getElementById('res-deaths').innerText = f.deaths || 0;
+                        document.getElementById('res-dmg-out').innerText = Math.round(f.totalDamage || 0);
+                        document.getElementById('res-dmg-in').innerText = Math.round(f.damageTaken || 0);
+                        document.getElementById('res-time').innerText = (f.completionTime || 0).toFixed(1) + 's';
+                    } else { document.getElementById('finalResultCard').classList.add('hidden'); }
+
+                    // C. 更新歷史與實值
+                    if(session.history.length > 0) {
+                        const last = session.history[session.history.length - 1];
                         document.getElementById('kd-display').innerText = last.kd;
-                        document.getElementById('recovery-steps').innerText = session.recovery_counter || 0;
+                        document.getElementById('player-status').innerText = last.status;
+                        document.getElementById('last-action').innerText = last.action;
 
                         document.getElementById('real-hp').innerText = (last.hp * BASE.HP).toFixed(1);
+                        document.getElementById('mult-hp').innerText = `倍率: ${last.hp.toFixed(2)}x`;
                         document.getElementById('real-atk').innerText = (last.atk * BASE.ATK).toFixed(1);
+                        document.getElementById('mult-atk').innerText = `倍率: ${last.atk.toFixed(2)}x`;
                         document.getElementById('real-det').innerText = (last.det * BASE.DET).toFixed(1);
+                        document.getElementById('mult-det').innerText = `倍率: ${last.det.toFixed(2)}x`;
                         document.getElementById('real-spd').innerText = (last.spd * BASE.SPD).toFixed(2);
+                        document.getElementById('mult-spd').innerText = `倍率: ${last.spd.toFixed(2)}x`;
 
-                        const labels = currentHistory.map((_, i) => i);
-                        kdChart.data.labels = labels;
-                        kdChart.data.datasets[0].data = currentHistory.map(h => h.kd);
+                        kdChart.data.labels = session.history.map((_, i) => i);
+                        kdChart.data.datasets[0].data = session.history.map(h => h.kd);
                         kdChart.update('none');
-
-                        paramChart.data.labels = labels;
-                        paramChart.data.datasets[0].data = currentHistory.map(h => h.hp);
-                        paramChart.data.datasets[1].data = currentHistory.map(h => h.atk);
-                        paramChart.data.datasets[2].data = currentHistory.map(h => h.det);
-                        paramChart.data.datasets[3].data = currentHistory.map(h => h.spd);
+                        paramChart.data.labels = session.history.map((_, i) => i);
+                        paramChart.data.datasets[0].data = session.history.map(h => h.hp);
+                        paramChart.data.datasets[1].data = session.history.map(h => h.atk);
+                        paramChart.data.datasets[2].data = session.history.map(h => h.det);
+                        paramChart.data.datasets[3].data = session.history.map(h => h.spd);
                         paramChart.update('none');
                     }
                 }
@@ -212,10 +229,10 @@ DASHBOARD_HTML = """
 """
 
 
-# --- 5. 核心邏輯修正 (⚠️ 修正降幅與回升) ---
+# --- 5. 路由處理邏輯 ---
 
 @app.route('/')
-def dashboard_home():
+def dashboard():
     return render_template_string(DASHBOARD_HTML, BASE_STATS=BASE_STATS)
 
 
@@ -228,89 +245,89 @@ def get_history_api():
 def adjust_difficulty():
     global PLAYER_SESSIONS
     data = request.get_json()
-    player_id = data.get("player_id", "Subject")
+    player_id = (data.get("player_id") or data.get("playerID") or "Subject").strip()
     status = data.get("status", "Alive")
     scene = data.get("scene_name", "Unknown")
+    mode = str(data.get("mode", "0"))
     game_time = data.get("game_time", 0)
 
     if player_id not in PLAYER_SESSIONS:
         PLAYER_SESSIONS[player_id] = {
             "params": {"HP_Mult": 1.0, "ATK_Mult": 1.0, "Det_Range": 1.0, "Move_Speed": 1.0},
-            "history": [], "has_calibrated": False,
-            "recovery_counter": 0  # 新增：恢復期計數器
+            "history": [], "has_calibrated": False, "recovery_counter": 0,
+            "final_result": None, "mode": mode, "last_updated": datetime.now().timestamp()
         }
 
     session = PLAYER_SESSIONS[player_id]
+    session["last_updated"] = datetime.now().timestamp()
+    session["mode"] = mode
     is_tut = (scene == "Tutorial")
 
-    # 死亡處理：大幅跳水
-    if status == "Dead":
-        # ⚠️ 強力降難：一次跳回 70% 的差距
-        new_params, action = adjust_difficulty_dda(
-            session["params"], {"kill_count": 0, "death_count": 10},
-            P_Strong, P_Weak, is_tutorial=False, is_first_game=True
-        )
-        # 手動加強降幅 (針對死亡事件做額外處理)
-        for key in session["params"]:
-            session["params"][key] = session["params"][key] + (P_Weak[key] - session["params"][key]) * 0.7
-
-        action = "Emergency Down (Death)"
-        session["recovery_counter"] = 4  # 設定 4 個週期的保護期
+    # 死亡與恢復期邏輯
+    if mode == "0":
+        session["params"] = {"HP_Mult": 1.0, "ATK_Mult": 1.0, "Det_Range": 1.0, "Move_Speed": 1.0}
+        action = "Monitoring (Control)"
     else:
-        # 正常 DDA 判定
-        if session["recovery_counter"] > 0:
-            # ⚠️ 恢復期中：即便 K/D 很高，也限制加難的速度
-            new_params, action = adjust_difficulty_dda(session["params"], data, P_Strong, P_Weak, is_tut, False)
-
-            # 如果 AI 想要加難，限制其增幅
-            if "Up" in action:
-                for key in session["params"]:
-                    # 只允許原本增幅的 30%
-                    diff = new_params[key] - session["params"][key]
-                    session["params"][key] += diff * 0.3
-                action += " (Restricted Recovery)"
+        if status == "Dead":
+            for key in session["params"]:
+                session["params"][key] = session["params"][key] + (P_Weak[key] - session["params"][key]) * 0.7
+            action = "Emergency Down (Death)"
+            session["recovery_counter"] = 4
+        else:
+            if session["recovery_counter"] > 0:
+                new_params, action = adjust_difficulty_dda(session["params"], data, P_Strong, P_Weak, is_tut, False)
+                if "Up" in action:
+                    for key in session["params"]:
+                        session["params"][key] += (new_params[key] - session["params"][key]) * 0.3
+                    action += " (Restricted)"
+                else:
+                    session["params"] = new_params
+                session["recovery_counter"] -= 1
             else:
+                is_first = (not session["has_calibrated"] and game_time > 2 and not is_tut)
+                if is_first: session["has_calibrated"] = True
+                new_params, action = adjust_difficulty_dda(session["params"], data, P_Strong, P_Weak, is_tut, is_first)
                 session["params"] = new_params
 
-            session["recovery_counter"] -= 1
-        else:
-            # 全速運作
-            is_first = (not session["has_calibrated"] and game_time > 2 and not is_tut)
-            if is_first: session["has_calibrated"] = True
+    # 數據日誌記錄
+    kill = data.get('kill_count', 0)
+    death = data.get('death_count', 0)
+    kd = kill / (death if death > 0 else 0.5)
+    session["history"].append({"kd": round(kd, 2), "hp": round(session["params"]["HP_Mult"], 2),
+                               "atk": round(session["params"]["ATK_Mult"], 2),
+                               "det": round(session["params"]["Det_Range"], 2),
+                               "spd": round(session["params"]["Move_Speed"], 2), "action": action, "status": status})
 
-            new_params, action = adjust_difficulty_dda(session["params"], data, P_Strong, P_Weak, is_tut, is_first)
-            session["params"] = new_params
-
-    # 記錄日誌
-    kill_count = data.get('kill_count', 0)
-    death_count = data.get('death_count', 0)
-    kd_ratio = kill_count / (death_count if death_count > 0 else 0.5)
-
-    session["history"].append({
-        "kd": round(kd_ratio, 2),
-        "hp": round(session["params"]["HP_Mult"], 2),
-        "atk": round(session["params"]["ATK_Mult"], 2),
-        "det": round(session["params"]["Det_Range"], 2),
-        "spd": round(session["params"]["Move_Speed"], 2),
-        "action": action, "status": status
-    })
-
-    init_csv_header()
     with open(LOG_FILE, 'a', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        writer.writerow([
-            datetime.now().strftime("%H:%M:%S"), player_id, data.get("mode"), scene, status,
-            f"{kd_ratio:.2f}",
-            f"{session['params']['HP_Mult']:.2f}", f"{session['params']['ATK_Mult']:.2f}",
-            f"{session['params']['Det_Range']:.2f}", f"{session['params']['Move_Speed']:.2f}",
-            f"{session['params']['HP_Mult'] * BASE_STATS['HP']:.1f}",
-            f"{session['params']['ATK_Mult'] * BASE_STATS['ATK']:.1f}",
-            f"{session['params']['Det_Range'] * BASE_STATS['DET']:.1f}",
-            f"{session['params']['Move_Speed'] * BASE_STATS['SPD']:.2f}",
-            action
-        ])
+        csv.writer(f).writerow([datetime.now().strftime("%H:%M:%S"), player_id, mode, scene, status, f"{kd:.2f}",
+                                f"{session['params']['HP_Mult']:.2f}", f"{session['params']['ATK_Mult']:.2f}",
+                                f"{session['params']['Det_Range']:.2f}", f"{session['params']['Move_Speed']:.2f}",
+                                f"{session['params']['HP_Mult'] * BASE_STATS['HP']:.1f}",
+                                f"{session['params']['ATK_Mult'] * BASE_STATS['ATK']:.1f}",
+                                f"{session['params']['Det_Range'] * BASE_STATS['DET']:.1f}",
+                                f"{session['params']['Move_Speed'] * BASE_STATS['SPD']:.2f}", action])
 
     return jsonify({"adjusted_params": session["params"], "adjustment_action": action})
+
+
+@app.route("/submit_final_result", methods=["POST"])
+def submit_final_result():
+    data = request.get_json()
+    player_id = (data.get("player_id") or data.get("playerID") or "Unknown").strip()
+    mode = str(data.get("mode", "N/A"))
+
+    if player_id in PLAYER_SESSIONS:
+        PLAYER_SESSIONS[player_id]["final_result"] = data
+        PLAYER_SESSIONS[player_id]["last_updated"] = datetime.now().timestamp()
+        if mode == "Game" or mode == "N/A":
+            mode = PLAYER_SESSIONS[player_id].get("mode", mode)
+
+    with open(FINAL_RESULT_FILE, 'a', newline='', encoding='utf-8') as f:
+        csv.writer(f).writerow(
+            [datetime.now().strftime("%Y-%m-%d %H:%M:%S"), player_id, mode, data.get("totalDamage", 0),
+             data.get("damageTaken", 0), data.get("kills", 0), data.get("deaths", 0), data.get("completionTime", 0),
+             "Success"])
+    return jsonify({"status": "success"})
 
 
 if __name__ == "__main__":

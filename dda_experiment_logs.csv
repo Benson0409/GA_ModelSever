@@ -545,3 +545,87 @@
 14:11:00,Adaptive_Subject_02,1,MainGame,Alive,20.00,1.30,1.22,1.07,1.15,130.3,12.2,21.4,2.88,Adjusted Up
 14:11:00,Adaptive_Subject_02,1,MainGame,Alive,22.00,1.31,1.23,1.07,1.16,131.4,12.3,21.4,2.89,Adjusted Up
 14:11:00,Adaptive_Subject_02,1,MainGame,Alive,22.00,1.32,1.24,1.07,1.16,132.5,12.4,21.5,2.91,Adjusted Up
+20:53:48,User_1340,0,Tutorial,Alive,0.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Tutorial Monitoring
+20:54:14,User_1340,0,Tutorial,Alive,0.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Tutorial Monitoring
+20:54:36,User_1340,0,Tutorial,Alive,6.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Tutorial Monitoring
+20:54:56,User_1340,0,Tutorial,Alive,14.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Tutorial Monitoring
+20:55:06,User_1340,0,MainGame,Alive,0.00,0.98,0.98,0.99,0.99,97.6,9.8,19.8,2.47,Adjusted Down
+20:55:26,User_1340,0,MainGame,Alive,4.00,1.00,0.99,0.99,1.00,99.7,9.9,19.9,2.50,Adjusted Up
+20:55:46,User_1340,0,MainGame,Alive,8.00,1.05,1.03,1.01,1.02,104.6,10.3,20.1,2.56,Adjusted Up
+20:56:06,User_1340,0,MainGame,Alive,10.00,1.09,1.06,1.02,1.04,108.8,10.6,20.4,2.61,Adjusted Up
+20:56:26,User_1340,0,MainGame,Alive,18.00,1.13,1.09,1.03,1.06,112.6,10.9,20.5,2.66,Adjusted Up
+20:56:46,User_1340,0,MainGame,Alive,28.00,1.16,1.12,1.04,1.08,115.8,11.2,20.7,2.70,Adjusted Up
+20:56:50,User_1340,0,MainGame,Win,32.00,1.19,1.14,1.04,1.09,118.7,11.4,20.9,2.73,Adjusted Up
+20:57:06,User_1340,0,MainGame,Alive,34.00,1.21,1.16,1.05,1.11,121.3,11.6,21.0,2.77,Adjusted Up
+20:57:26,User_1340,0,MainGame,Alive,34.00,1.24,1.17,1.06,1.12,123.5,11.7,21.1,2.79,Adjusted Up
+21:18:13,User_6756,0,Tutorial,Alive,0.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:18:37,User_6756,0,Tutorial,Alive,0.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:19:01,User_6756,0,MainGame,Alive,0.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:19:21,User_6756,0,MainGame,Alive,2.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:19:41,User_6756,0,MainGame,Alive,4.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:20:01,User_6756,0,MainGame,Alive,6.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:20:21,User_6756,0,MainGame,Alive,8.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:20:41,User_6756,0,MainGame,Alive,12.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:21:01,User_6756,0,MainGame,Alive,18.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:21:21,User_6756,0,MainGame,Alive,28.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:21:41,User_6756,0,MainGame,Alive,42.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:21:45,User_6756,0,MainGame,Win,48.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:22:01,User_6756,0,MainGame,Alive,48.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:47:47,User_2287,0,Tutorial,Alive,0.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:48:09,User_2287,0,Tutorial,Alive,0.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:48:38,User_2287,0,Tutorial,Alive,0.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:48:58,User_2287,0,Tutorial,Alive,10.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:49:12,User_2287,0,MainGame,Alive,0.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:49:32,User_2287,0,MainGame,Alive,4.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:49:52,User_2287,0,MainGame,Alive,10.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:50:12,User_2287,0,MainGame,Alive,14.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:50:32,User_2287,0,MainGame,Alive,16.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:50:52,User_2287,0,MainGame,Alive,32.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:51:05,User_2287,0,MainGame,Win,44.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:51:12,User_2287,0,MainGame,Alive,46.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+21:51:32,User_2287,0,MainGame,Alive,12.00,1.00,1.00,1.00,1.00,100.0,10.0,20.0,2.50,Monitoring (Control Group)
+22:01:43,Sim_Player_001,1,MainGame,Alive,28.00,1.02,1.01,1.00,1.01,102.0,10.1,20.1,2.52,Adjusted Up
+22:01:44,Sim_Player_001,1,MainGame,Alive,16.00,1.07,1.05,1.02,1.03,106.6,10.5,20.3,2.58,Adjusted Up
+22:01:45,Sim_Player_001,1,MainGame,Alive,28.00,1.11,1.08,1.03,1.05,110.6,10.8,20.5,2.63,Adjusted Up
+22:01:46,Sim_Player_001,1,MainGame,Alive,10.00,1.14,1.11,1.04,1.07,114.1,11.1,20.7,2.68,Adjusted Up
+22:01:47,Sim_Player_001,1,MainGame,Alive,20.00,1.17,1.13,1.04,1.09,117.2,11.3,20.9,2.72,Adjusted Up
+22:01:48,Sim_Player_001,1,MainGame,Alive,30.00,1.20,1.15,1.05,1.10,119.9,11.5,21.0,2.75,Adjusted Up
+22:01:49,Sim_Player_001,1,MainGame,Alive,12.00,1.22,1.17,1.06,1.11,122.4,11.7,21.1,2.78,Adjusted Up
+22:01:50,Sim_Player_001,1,MainGame,Alive,22.00,1.24,1.18,1.06,1.12,124.5,11.8,21.2,2.81,Adjusted Up
+22:01:51,Sim_Player_001,1,MainGame,Alive,26.00,1.26,1.20,1.07,1.13,126.3,12.0,21.3,2.83,Adjusted Up
+22:01:52,Sim_Player_001,1,MainGame,Alive,24.00,1.28,1.21,1.07,1.14,128.0,12.1,21.4,2.85,Adjusted Up
+22:01:56,Sim_Player_002_NEW,2,MainGame,Alive,28.00,1.02,1.01,1.00,1.01,102.0,10.1,20.1,2.52,Adjusted Up
+22:01:57,Sim_Player_002_NEW,2,MainGame,Alive,12.00,1.07,1.05,1.02,1.03,106.6,10.5,20.3,2.58,Adjusted Up
+22:01:58,Sim_Player_002_NEW,2,MainGame,Alive,14.00,1.11,1.08,1.03,1.05,110.6,10.8,20.5,2.63,Adjusted Up
+22:01:59,Sim_Player_002_NEW,2,MainGame,Alive,14.00,1.14,1.11,1.04,1.07,114.1,11.1,20.7,2.68,Adjusted Up
+22:02:00,Sim_Player_002_NEW,2,MainGame,Alive,28.00,1.17,1.13,1.04,1.09,117.2,11.3,20.9,2.72,Adjusted Up
+22:02:01,Sim_Player_002_NEW,2,MainGame,Alive,24.00,1.20,1.15,1.05,1.10,119.9,11.5,21.0,2.75,Adjusted Up
+22:02:02,Sim_Player_002_NEW,2,MainGame,Alive,16.00,1.22,1.17,1.06,1.11,122.4,11.7,21.1,2.78,Adjusted Up
+22:02:03,Sim_Player_002_NEW,2,MainGame,Alive,20.00,1.24,1.18,1.06,1.12,124.5,11.8,21.2,2.81,Adjusted Up
+22:02:04,Sim_Player_002_NEW,2,MainGame,Alive,20.00,1.26,1.20,1.07,1.13,126.3,12.0,21.3,2.83,Adjusted Up
+22:02:05,Sim_Player_002_NEW,2,MainGame,Alive,14.00,1.28,1.21,1.07,1.14,128.0,12.1,21.4,2.85,Adjusted Up
+22:04:38,Sim_Varied_User_99,1,MainGame,Alive,24.00,1.02,1.01,1.00,1.01,102.0,10.1,20.1,2.52,Adjusted Up
+22:04:39,Sim_Varied_User_99,1,MainGame,Alive,24.00,1.07,1.05,1.02,1.03,106.6,10.5,20.3,2.58,Adjusted Up
+22:04:39,Sim_Varied_User_99,1,MainGame,Alive,24.00,1.11,1.08,1.03,1.05,110.6,10.8,20.5,2.63,Adjusted Up
+22:04:40,Sim_Varied_User_99,1,MainGame,Alive,24.00,1.14,1.11,1.04,1.07,114.1,11.1,20.7,2.68,Adjusted Up
+22:04:40,Sim_Varied_User_99,1,MainGame,Alive,24.00,1.17,1.13,1.04,1.09,117.2,11.3,20.9,2.72,Adjusted Up
+22:04:41,Sim_Varied_User_99,1,MainGame,Alive,24.00,1.20,1.15,1.05,1.10,119.9,11.5,21.0,2.75,Adjusted Up
+22:04:41,Sim_Varied_User_99,1,MainGame,Alive,24.00,1.22,1.17,1.06,1.11,122.4,11.7,21.1,2.78,Adjusted Up
+22:04:42,Sim_Varied_User_99,1,MainGame,Alive,24.00,1.24,1.18,1.06,1.12,124.5,11.8,21.2,2.81,Adjusted Up
+22:04:42,Sim_Varied_User_99,1,MainGame,Alive,24.00,1.26,1.20,1.07,1.13,126.3,12.0,21.3,2.83,Adjusted Up
+22:04:43,Sim_Varied_User_99,1,MainGame,Alive,24.00,1.28,1.21,1.07,1.14,128.0,12.1,21.4,2.85,Adjusted Up
+22:04:43,Sim_Varied_User_99,1,MainGame,Alive,0.50,1.28,1.21,1.07,1.14,128.0,12.1,21.4,2.85,Stay Balanced
+22:04:44,Sim_Varied_User_99,1,MainGame,Alive,0.50,1.28,1.21,1.07,1.14,128.0,12.1,21.4,2.85,Stay Balanced
+22:04:44,Sim_Varied_User_99,1,MainGame,Alive,0.50,1.28,1.21,1.07,1.14,128.0,12.1,21.4,2.85,Stay Balanced
+22:04:45,Sim_Varied_User_99,1,MainGame,Alive,0.50,1.28,1.21,1.07,1.14,128.0,12.1,21.4,2.85,Stay Balanced
+22:04:45,Sim_Varied_User_99,1,MainGame,Alive,0.50,1.28,1.21,1.07,1.14,128.0,12.1,21.4,2.85,Stay Balanced
+22:04:46,Sim_Varied_User_99,1,MainGame,Alive,0.00,1.22,1.16,1.05,1.11,122.2,11.6,21.0,2.78,Adjusted Down
+22:04:46,Sim_Varied_User_99,1,MainGame,Alive,0.00,1.17,1.12,1.03,1.09,117.2,11.2,20.6,2.71,Adjusted Down
+22:04:47,Sim_Varied_User_99,1,MainGame,Alive,0.00,1.13,1.08,1.02,1.06,112.7,10.8,20.3,2.66,Adjusted Down
+22:04:48,Sim_Varied_User_99,1,MainGame,Alive,0.00,1.09,1.05,1.00,1.04,108.8,10.5,20.0,2.61,Adjusted Down
+22:04:48,Sim_Varied_User_99,1,MainGame,Alive,0.00,1.05,1.02,0.99,1.03,105.3,10.2,19.8,2.57,Adjusted Down
+22:04:49,Sim_Varied_User_99,1,MainGame,Dead,0.00,0.88,0.86,0.93,0.94,87.6,8.6,18.5,2.34,Emergency Down (Death)
+22:04:49,Sim_Varied_User_99,1,MainGame,Alive,20.00,0.89,0.88,0.93,0.95,89.5,8.8,18.7,2.37,Adjusted Up (Restricted)
+22:04:49,Sim_Varied_User_99,1,MainGame,Alive,20.00,0.91,0.90,0.94,0.96,91.3,9.0,18.8,2.39,Adjusted Up (Restricted)
+22:04:50,Sim_Varied_User_99,1,MainGame,Alive,20.00,0.93,0.91,0.94,0.97,93.1,9.1,18.9,2.41,Adjusted Up (Restricted)
+22:04:50,Sim_Varied_User_99,1,MainGame,Alive,20.00,0.95,0.92,0.95,0.97,94.7,9.2,19.0,2.43,Adjusted Up (Restricted)
