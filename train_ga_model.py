@@ -5,10 +5,10 @@ import pickle
 from model_core import simulate_game_run, evaluate_from_unity
 
 # --- 基因範圍重新設定 (收縮邊界避免秒殺) ---
-HP_BOUNDS = [0.7, 1.4]     # 血量最低 0.7 防止秒殺，最高 1.4 防止太坦
-ATK_BOUNDS = [0.7, 1.4]    # 攻擊力收縮
+HP_BOUNDS = [0.8, 1.4]     # 血量最低 0.7 防止秒殺，最高 1.4 防止太坦
+ATK_BOUNDS = [0.8, 1.3]    # 攻擊力收縮
 DET_BOUNDS = [0.9, 1.1]    # 偵測範圍限制
-SPEED_BOUNDS = [0.9, 1.1]  # 移動速度限制
+SPEED_BOUNDS = [0.9, 1.2]  # 移動速度限制
 
 POP_SIZE = 50
 N_GEN = 60
