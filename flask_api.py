@@ -326,7 +326,7 @@ def submit_final_result():
         csv.writer(f).writerow(
             [datetime.now().strftime("%Y-%m-%d %H:%M:%S"), player_id, mode, data.get("totalDamage", 0),
              data.get("damageTaken", 0), data.get("kills", 0), data.get("deaths", 0), data.get("completionTime", 0),
-             "Success"])
+             data.get("result")])
     return jsonify({"status": "success"})
 
 
