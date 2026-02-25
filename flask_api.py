@@ -3,8 +3,14 @@ from model_core import evaluate_from_unity, adjust_difficulty_dda
 import pickle
 import json
 import csv
+import pandas as pd
 from datetime import datetime
 import os
+
+import requests
+import base64
+
+GAS_URL = "https://script.google.com/macros/s/AKfycbwxasW97p-s7H6Rtht0U0QybuRo36EAFR8SI-5Edq4hQ0w5bAqyyHspDLl9WJ4ykCpC/exec"
 
 app = Flask(__name__)
 
@@ -195,27 +201,31 @@ DASHBOARD_HTML = """
                     // C. 更新歷史與實值
                     if(session.history.length > 0) {
                         const last = session.history[session.history.length - 1];
-                        document.getElementById('kd-display').innerText = last.kd;
-                        document.getElementById('player-status').innerText = last.status;
-                        document.getElementById('last-action').innerText = last.action;
+                        // 改用新的大寫變數名稱
+                        document.getElementById('kd-display').innerText = last.KD_Ratio;
+                        document.getElementById('player-status').innerText = last.Status;
+                        document.getElementById('last-action').innerText = last.Action;
 
-                        document.getElementById('real-hp').innerText = (last.hp * BASE.HP).toFixed(1);
-                        document.getElementById('mult-hp').innerText = `倍率: ${last.hp.toFixed(2)}x`;
-                        document.getElementById('real-atk').innerText = (last.atk * BASE.ATK).toFixed(1);
-                        document.getElementById('mult-atk').innerText = `倍率: ${last.atk.toFixed(2)}x`;
-                        document.getElementById('real-det').innerText = (last.det * BASE.DET).toFixed(1);
-                        document.getElementById('mult-det').innerText = `倍率: ${last.det.toFixed(2)}x`;
-                        document.getElementById('real-spd').innerText = (last.spd * BASE.SPD).toFixed(2);
-                        document.getElementById('mult-spd').innerText = `倍率: ${last.spd.toFixed(2)}x`;
+                        // 因為後端已經算好 Real_HP 等實值了，直接拿來顯示即可
+                        document.getElementById('real-hp').innerText = last.Real_HP.toFixed(1);
+                        document.getElementById('mult-hp').innerText = `倍率: ${last.HP_Mult.toFixed(2)}x`;
+                        document.getElementById('real-atk').innerText = last.Real_ATK.toFixed(1);
+                        document.getElementById('mult-atk').innerText = `倍率: ${last.ATK_Mult.toFixed(2)}x`;
+                        document.getElementById('real-det').innerText = last.Real_DET.toFixed(1);
+                        document.getElementById('mult-det').innerText = `倍率: ${last.DET_Mult.toFixed(2)}x`;
+                        document.getElementById('real-spd').innerText = last.Real_SPD.toFixed(2);
+                        document.getElementById('mult-spd').innerText = `倍率: ${last.SPD_Mult.toFixed(2)}x`;
 
+                        // 更新圖表：改對應 KD_Ratio, HP_Mult 等新變數
                         kdChart.data.labels = session.history.map((_, i) => i);
-                        kdChart.data.datasets[0].data = session.history.map(h => h.kd);
+                        kdChart.data.datasets[0].data = session.history.map(h => h.KD_Ratio);
                         kdChart.update('none');
+                        
                         paramChart.data.labels = session.history.map((_, i) => i);
-                        paramChart.data.datasets[0].data = session.history.map(h => h.hp);
-                        paramChart.data.datasets[1].data = session.history.map(h => h.atk);
-                        paramChart.data.datasets[2].data = session.history.map(h => h.det);
-                        paramChart.data.datasets[3].data = session.history.map(h => h.spd);
+                        paramChart.data.datasets[0].data = session.history.map(h => h.HP_Mult);
+                        paramChart.data.datasets[1].data = session.history.map(h => h.ATK_Mult);
+                        paramChart.data.datasets[2].data = session.history.map(h => h.DET_Mult);
+                        paramChart.data.datasets[3].data = session.history.map(h => h.SPD_Mult);
                         paramChart.update('none');
                     }
                 }
@@ -293,11 +303,23 @@ def adjust_difficulty():
     kill = data.get('kill_count', 0)
     death = data.get('death_count', 0)
     kd = kill / (death if death > 0 else 0.5)
-    session["history"].append({"kd": round(kd, 2), "hp": round(session["params"]["HP_Mult"], 2),
-                               "atk": round(session["params"]["ATK_Mult"], 2),
-                               "det": round(session["params"]["Det_Range"], 2),
-                               "spd": round(session["params"]["Move_Speed"], 2), "action": action, "status": status})
-
+    session["history"].append({
+        "Time": datetime.now().strftime("%H:%M:%S"),
+        "Player_ID": player_id,
+        "Mode": mode,
+        "Scene": scene,
+        "Status": status,
+        "KD_Ratio": round(kd, 2),
+        "HP_Mult": round(session["params"]["HP_Mult"], 2),
+        "ATK_Mult": round(session["params"]["ATK_Mult"], 2),
+        "DET_Mult": round(session["params"]["Det_Range"], 2),
+        "SPD_Mult": round(session["params"]["Move_Speed"], 2),
+        "Real_HP": round(session["params"]["HP_Mult"] * BASE_STATS['HP'], 1),
+        "Real_ATK": round(session["params"]["ATK_Mult"] * BASE_STATS['ATK'], 1),
+        "Real_DET": round(session["params"]["Det_Range"] * BASE_STATS['DET'], 1),
+        "Real_SPD": round(session["params"]["Move_Speed"] * BASE_STATS['SPD'], 2),
+        "Action": action
+    })
     with open(LOG_FILE, 'a', newline='', encoding='utf-8') as f:
         csv.writer(f).writerow([datetime.now().strftime("%H:%M:%S"), player_id, mode, scene, status, f"{kd:.2f}",
                                 f"{session['params']['HP_Mult']:.2f}", f"{session['params']['ATK_Mult']:.2f}",
@@ -312,6 +334,7 @@ def adjust_difficulty():
 
 @app.route("/submit_final_result", methods=["POST"])
 def submit_final_result():
+    global PLAYER_SESSIONS
     data = request.get_json()
     player_id = (data.get("player_id") or data.get("playerID") or "Unknown").strip()
     mode = str(data.get("mode", "N/A"))
@@ -322,12 +345,87 @@ def submit_final_result():
         if mode == "Game" or mode == "N/A":
             mode = PLAYER_SESSIONS[player_id].get("mode", mode)
 
+    # 1. 定義要寫入的結算數據陣列 (這樣本地端與雲端才能共用這筆資料)
+    row_data = [
+        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        player_id,
+        mode,
+        data.get("totalDamage", 0),
+        data.get("damageTaken", 0),
+        data.get("kills", 0),
+        data.get("deaths", 0),
+        data.get("completionTime", 0),
+        data.get("result")
+    ]
+
+    # 2. 寫入全局的 final_experiment_results.csv (本地備份)
     with open(FINAL_RESULT_FILE, 'a', newline='', encoding='utf-8') as f:
-        csv.writer(f).writerow(
-            [datetime.now().strftime("%Y-%m-%d %H:%M:%S"), player_id, mode, data.get("totalDamage", 0),
-             data.get("damageTaken", 0), data.get("kills", 0), data.get("deaths", 0), data.get("completionTime", 0),
-             data.get("result")])
-    return jsonify({"status": "success"})
+        csv.writer(f).writerow(row_data)
+
+    # ✨ 呼叫雲端上傳 1：將結算數據寫入 Google 試算表
+    append_summary_to_sheet(row_data)
+
+    # ---------------------------------------------------------
+    # 3. 產出該玩家專屬的完整 DDA 歷程 CSV 並上傳
+    # ---------------------------------------------------------
+    if player_id in PLAYER_SESSIONS and len(PLAYER_SESSIONS[player_id]["history"]) > 0:
+        try:
+            # 取出該玩家的歷史紀錄並轉為 DataFrame
+            history_data = PLAYER_SESSIONS[player_id]["history"]
+            df = pd.DataFrame(history_data)
+
+            # 建立獨立存放的資料夾
+            backup_dir = "Local_Player_Data"
+            if not os.path.exists(backup_dir):
+                os.makedirs(backup_dir)
+
+            # 生成獨一無二的檔名：時間戳記 + 玩家ID
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"Player_{player_id}_Mode{mode}_{timestamp}.csv"
+            filepath = os.path.join(backup_dir, filename)
+
+            # 輸出 CSV (使用 utf-8-sig 避免 Excel 開啟時中文亂碼)
+            df.to_csv(filepath, index=False, encoding='utf-8-sig')
+            print(f"✅ 專屬數據已匯出：{filepath}")
+
+            # ✨ 呼叫雲端上傳 2：將專屬 CSV 檔案傳送至 Google Drive
+            upload_csv_to_drive(filepath)
+
+        except Exception as e:
+            print(f"❌ 產出或上傳專屬 CSV 時發生錯誤：{e}")
+
+    return jsonify({"status": "success", "message": "結算數據已記錄，專屬 CSV 已生成並上傳"})
+def upload_csv_to_drive(filepath):
+    try:
+        with open(filepath, "rb") as f:
+            file_content = base64.b64encode(f.read()).decode("utf-8")
+
+        filename = os.path.basename(filepath)
+        payload = {
+            "type": "file",
+            "filename": filename,
+            "fileContent": file_content
+        }
+
+        print(f"🚀 準備上傳 {filename} 至 Google Drive...")
+        res = requests.post(GAS_URL, json=payload)
+        print(f"☁️ 雲端回應: {res.json().get('message', '未知回應')}")
+
+    except Exception as e:
+        print(f"❌ 上傳 CSV 失敗: {e}")
+
+
+def append_summary_to_sheet(row_data):
+    try:
+        payload = {
+            "type": "summary",
+            "rowData": row_data
+        }
+        print(f"🚀 準備將結算數據寫入 Google Sheets...")
+        res = requests.post(GAS_URL, json=payload)
+        print(f"☁️ 雲端回應: {res.json().get('message', '未知回應')}")
+    except Exception as e:
+        print(f"❌ 寫入試算表失敗: {e}")
 
 
 if __name__ == "__main__":
